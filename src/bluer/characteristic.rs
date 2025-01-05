@@ -84,7 +84,16 @@ impl CharacteristicImpl {
     /// Write the value of this descriptor on the device to `value` and request the device return a response indicating
     /// a successful write.
     pub async fn write(&self, value: &[u8]) -> Result<()> {
-        self.inner.write(value).await.map_err(Into::into)
+        self.inner
+            .write_ext(
+                value,
+                &CharacteristicWriteRequest {
+                    op_type: WriteOp::Request,
+                    ..Default::default()
+                },
+            )
+            .await
+            .map_err(Into::into)
     }
 
     /// Write the value of this descriptor on the device to `value` without requesting a response.
